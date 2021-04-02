@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+
+# 제목 : 번개장터 중고상품 (이미지, 제목, 가격 ) 크롤링 소스
+# 작성자 : 전규빈
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
@@ -16,7 +20,8 @@ with webdriver.Edge('msedgedriver.exe') as driver:
     if not path.isdir(folder_name):
         os.mkdir(folder_name)
 
-    total_data = 0
+    file_list = os.listdir(folder_name)
+    file_number = len(file_list) + 1
     page_number = 1
     while True:
         try:
@@ -37,29 +42,27 @@ with webdriver.Edge('msedgedriver.exe') as driver:
         image_elements = wait.until(image_conditions, f"The image elements don't exist at this page {page_number}")
         price_elements = wait.until(price_conditions, f"The price elements don't exist at this page {page_number}")
 
-        print(f"Page: {page_number}")
         for i in range(len(title_elements)):
-            total_data += 1
-
             title = title_elements[i].text
             image_src = image_elements[i].get_attribute('src')
-
             try:
                 price = int(price_elements[i].text.replace(',', ''))
             except Exception as e:
                 print(e)
                 continue
-            print(title, image_src, price)
+            print(page_number, i, title, image_src, price)
 
             header = {'User-Agent': 'Edge/89.0.774.57'}
             result = requests.get(image_src, headers=header)
             image_bytes = io.BytesIO(result.content)
             image = Image.open(image_bytes)
             image_size = (100, 100)
-            image_resized = image.resize(image_size)
-            image_resized.save(f"{folder_name}/{total_data}_{price}.jpg")
+            image = image.resize(image_size)
+            image = image.convert("RGB")
+            image.save(f"{folder_name}/{file_number}_{price}.jpg")
 
-        print(f"Total data: {total_data}")
+            file_number += 1
+
         page_number += 1
 
     input("press any key to exit")
