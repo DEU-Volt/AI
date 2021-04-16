@@ -27,8 +27,8 @@ with webdriver.Edge('msedgedriver.exe') as driver:
             print(e)
             break
 
-        title_locator = (By.CSS_SELECTOR, "div.sc-ekulBa.bPZorb")
-        price_locator = (By.CSS_SELECTOR, "div.sc-ciodno")
+        title_locator = (By.CSS_SELECTOR, "div.sc-ciodno.LQqaE")
+        price_locator = (By.CSS_SELECTOR, "div.sc-gGCbJM.dZFstm")
 
         title_conditions = expected_conditions.presence_of_all_elements_located(title_locator)
         price_conditions = expected_conditions.presence_of_all_elements_located(price_locator)
