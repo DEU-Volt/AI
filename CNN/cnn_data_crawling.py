@@ -67,17 +67,17 @@ with webdriver.Edge('msedgedriver.exe') as driver:
             title = title_elements[i].text
             for word in tokenizer_create(title):
                 word.upper()
-                if lg_count < 1000 and word in phone_list['lg']:
+                if lg_count < 200 and word in phone_list['lg']:
                     brand_folder = "lg"
                     lg_count += 1
                     image_name = f"{image_folder}/{brand_folder}/{brand_folder}_{lg_count}.jpg"
                     break
-                elif apple_count < 1000 and word in phone_list['apple']:
+                elif apple_count < 200 and word in phone_list['apple']:
                     brand_folder = "apple"
                     apple_count += 1
                     image_name = f"{image_folder}/{brand_folder}/{brand_folder}_{apple_count}.jpg"
                     break
-                elif samsung_count < 1000 and word in phone_list['samsung']:
+                elif samsung_count < 200 and word in phone_list['samsung']:
                     brand_folder = "samsung"
                     samsung_count += 1
                     image_name = f"{image_folder}/{brand_folder}/{brand_folder}_{samsung_count}.jpg"
@@ -94,10 +94,10 @@ with webdriver.Edge('msedgedriver.exe') as driver:
             image = image.convert("RGB")
             image.save(image_name)
 
-            if lg_count >= 1000 and samsung_count >= 1000 and apple_count >= 1000:
+            if lg_count >= 200 and samsung_count >= 200 and apple_count >= 200:
                 break
 
-        if lg_count >= 1000 and samsung_count >= 1000 and apple_count >= 1000:
+        if lg_count >= 200 and samsung_count >= 200 and apple_count >= 200:
             break
         page_number += 1
 
