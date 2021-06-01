@@ -144,7 +144,7 @@ class RNN:
         model.summary()
 
         model.compile(loss=losses.MeanSquaredError(), optimizer=optimizers.Adam(1e-4), metrics=['mae'])
-        history = model.fit(self._X_train, self._y_train_scaled, epochs=1,
+        history = model.fit(self._X_train, self._y_train_scaled, epochs=20,
                             validation_data=(self._X_test, self._y_test_scaled),
                             validation_steps=30, verbose=1)
         model.save(self._model_name)
