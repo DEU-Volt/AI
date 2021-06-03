@@ -21,28 +21,17 @@ def top5_indices(text, data, q_num):
 
     return tag_indices
 
-# 단어 토큰화
-def tokenizer_create(text):
-    okt = Okt()
-    text_pos = okt.pos(text, norm=True)
 
-    words = []
-    for word in text_pos:
-        words.append(word[0])
-
-    return words
-
-okky_data = pd.read_csv(r'train_data_add.csv', encoding="utf-8", low_memory=False)
+train_data = pd.read_csv(r'train_data_add.csv', encoding="utf-8", low_memory=False)
 vectorizer = TfidfVectorizer()
-vectorizer.fit(okky_data['title'])
-title_vectors = vectorizer.transform(okky_data['title'])
+vectorizer.fit(train_data['title'])
+title_vectors = vectorizer.transform(train_data['title'])
 
 text = input('타이틀을 입력하세요 : ')
-tokenizer_text = tokenizer_create(text)
-text_vector = vectorizer.transform(tokenizer_text)
+text_vector = vectorizer.transform([text])
 
-tit_5_q = okky_data['title'].iloc[top5_indices(text_vector, title_vectors, 0)]
-print(f"\n{tit_5_q}")
+top_5_title = train_data['title'].iloc[top5_indices(text_vector, title_vectors, 0)]
+print(f"\n{top_5_title}")
 
 # for i in range(len(okky_data)):
 #     tit_5_q = okky_data['title'].iloc[top5_indices(text_vector, title_vectors, i)]

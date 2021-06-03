@@ -1,5 +1,5 @@
 import pandas as pd
-from konlpy.tag import Okt
+from konlpy import tag
 import random
 import pickle
 from keras.preprocessing import sequence
@@ -12,6 +12,7 @@ from tensorflow.keras import models
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
+import os.path
 
 
 def data_load(option):
@@ -51,7 +52,7 @@ class RNN:
 
         except Exception as e:
             print("------------Data 사전이 없으므로 생성합니다----------")
-            okt = Okt()
+            okt = tag.Okt()
             words_set = set()
             self._titles_words = []
             count = 1
@@ -74,7 +75,6 @@ class RNN:
                 words_id = words_to_ids(title, self._dictionary)
                 self._titles_ids.append(words_id)
                 count += 1
-
 
     def ids_to_words(self, ids):
         words = []
@@ -119,7 +119,7 @@ class RNN:
 
     @staticmethod
     def tokenizer_create(text):
-        okt = Okt()
+        okt = tag.Okt()
         text_pos = okt.pos(text, norm=True)
 
         words = []
@@ -198,19 +198,33 @@ class RNN:
         model = self.model_load()
         predictions = model.predict(text_ids_np)
         text_predictions_inverse = self._scaler.inverse_transform(predictions)
-        print(f'{text} -> {text_predictions_inverse}')
-        return text_predictions_inverse
+        # print(f'{text} -> {text_predictions_inverse}')
+        return text_predictions_inverse[0][0]
 
 
-test1 = "아이폰SE 2세대 128G 신상 급처 합니다"
-test2 = "갤럭시S10 256G 중고가로 판매합니다"
-test3 = "갤럭시A6 32G 급처합니다"
-try:
-    a = RNN("baseline_model_data_add.h5")
-    a.index_process()
-except Exception as e:
-    print(e)
+rnn = RNN("baseline_model_data_add.h5")
+rnn.index_process()
+file_1 = 'C:\\Users\\JEONKYUBIN\\Desktop\\AI\\RNN\\data.txt'
+file_2 = 'C:\\Users\\JEONKYUBIN\\Desktop\\AI\\RNN\\prediction.txt'
 
-a.predict_phone(test1)
-a.predict_phone(test2)
-a.predict_phone(test3)
+while True:
+    if os.path.isfile(file_1):  # if 문 쓰기 (파일 존재 유무 검사)
+        with open("data.txt", 'r', encoding='UTF-8') as f:
+            test = f.read()
+        if not test:
+            #print("문자열이 비어있음")
+            continue
+
+        print(test)
+        price_float = rnn.predict_phone(test)
+        price_int = int(price_float)
+        price_str = str(price_int)
+        with open("prediction.txt", 'w', encoding='UTF-8') as f:
+            f.write(price_str)
+        print(price_str + "원")
+
+        os.remove(file_1)
+        # data.txt 파일 지우기 추가
+    else :
+        pass
+       #print("AI 작동에 문제가 생겼습니다")
