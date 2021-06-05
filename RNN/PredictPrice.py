@@ -16,7 +16,7 @@ import os.path
 
 
 def data_load(option):
-    csv = pd.read_csv('train_data_add.csv')
+    csv = pd.read_csv('train_data_add_add.csv')
     titles_csv = csv['title']
     prices_csv = csv['price']
     if option == "titles":
@@ -75,6 +75,13 @@ class RNN:
                 words_id = words_to_ids(title, self._dictionary)
                 self._titles_ids.append(words_id)
                 count += 1
+            with open("titles_words.bin", "wb") as f:
+                pickle.dump(self._titles_words, f)
+            with open("dictionary.bin", "wb") as f:
+                pickle.dump(self._dictionary, f)
+            with open("titles_ids.bin", "wb") as f:
+                pickle.dump(self._titles_ids, f)
+
 
     def ids_to_words(self, ids):
         words = []
@@ -144,16 +151,11 @@ class RNN:
         model.summary()
 
         model.compile(loss=losses.MeanSquaredError(), optimizer=optimizers.Adam(1e-4), metrics=['mae'])
-        history = model.fit(self._X_train, self._y_train_scaled, epochs=20,
+        history = model.fit(self._X_train, self._y_train_scaled, epochs=30,
                             validation_data=(self._X_test, self._y_test_scaled),
                             validation_steps=30, verbose=1)
         model.save(self._model_name)
-        with open("titles_words.bin", "wb") as f:
-            pickle.dump(self._titles_words, f)
-        with open("dictionary.bin", "wb") as f:
-            pickle.dump(self._dictionary, f)
-        with open("titles_ids.bin", "wb") as f:
-            pickle.dump(self._titles_ids, f)
+
         return model
 
     def model_load(self):
