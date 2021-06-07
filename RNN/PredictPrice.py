@@ -13,6 +13,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import os.path
+from flask import Flask, request
 
 
 def data_load(option):
@@ -81,7 +82,6 @@ class RNN:
                 pickle.dump(self._dictionary, f)
             with open("titles_ids.bin", "wb") as f:
                 pickle.dump(self._titles_ids, f)
-
 
     def ids_to_words(self, ids):
         words = []
@@ -200,7 +200,7 @@ class RNN:
         model = self.model_load()
         predictions = model.predict(text_ids_np)
         text_predictions_inverse = self._scaler.inverse_transform(predictions)
-        #print(f'{text} -> {text_predictions_inverse}')
+        # print(f'{text} -> {text_predictions_inverse}')
         return text_predictions_inverse[0][0]
 
 
@@ -209,25 +209,46 @@ rnn.index_process()
 file_1 = 'C:\\Users\\JEONKYUBIN\\Desktop\\AI\\RNN\\data.txt'
 file_2 = 'C:\\Users\\JEONKYUBIN\\Desktop\\AI\\RNN\\prediction.txt'
 
-while True:
-    if os.path.isfile(file_1):  # if 문 쓰기 (파일 존재 유무 검사)
-        with open("data.txt", 'r', encoding='UTF-8') as f:
-            test = f.read()
-        if not test:
-            #print("문자열이 비어있음")
-            continue
-        text_upped = test.upper()
-        print(test)
-        price_float = rnn.predict_phone(text_upped)
-        price_int = round(int(price_float),-3)
-        price_str = str(price_int)
-        with open("prediction.txt", 'w', encoding='UTF-8') as f:
-            f.write(price_str)
-        print(price_str + "원")
+app = Flask(__name__)
 
-        os.remove(file_1)
-        # data.txt 파일 지우기 추가
-    else :
-        pass
-       #print("AI 작동에 문제가 생겼습니다")
 
+
+
+@app.route('/volt/ai', methods=['GET'])
+def ai_route() -> None:
+    try:
+        product_name = request.args.get('product_name')
+        price_float: float = rnn.predict_phone(product_name.upper())
+        price_int: int = round(int(price_float), -3)
+        return {
+            'data': price_int
+        }
+    except:
+        return {
+            'data': 'error'
+        }
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')
+
+# while True:
+#     if os.path.isfile(file_1):  # if 문 쓰기 (파일 존재 유무 검사)
+#         with open("data.txt", 'r', encoding='UTF-8') as f:
+#             test = f.read()
+#         if not test:
+#             # print("문자열이 비어있음")
+#             continue
+#         text_upped = test.upper()
+#         print(test)
+#         price_float = rnn.predict_phone(text_upped)
+#         price_int = round(int(price_float), -3)
+#         price_str = str(price_int)
+#         with open("prediction.txt", 'w', encoding='UTF-8') as f:
+#             f.write(price_str)
+#         print(price_str + "원")
+#
+#         os.remove(file_1)
+#         # data.txt 파일 지우기 추가
+#     else:
+#         pass
+#     # print("AI 작동에 문제가 생겼습니다")
