@@ -200,7 +200,7 @@ class RNN:
         model = self.model_load()
         predictions = model.predict(text_ids_np)
         text_predictions_inverse = self._scaler.inverse_transform(predictions)
-        # print(f'{text} -> {text_predictions_inverse}')
+        #print(f'{text} -> {text_predictions_inverse}')
         return text_predictions_inverse[0][0]
 
 
@@ -216,10 +216,10 @@ while True:
         if not test:
             #print("문자열이 비어있음")
             continue
-
+        text_upped = test.upper()
         print(test)
-        price_float = rnn.predict_phone(test)
-        price_int = int(price_float)
+        price_float = rnn.predict_phone(text_upped)
+        price_int = round(int(price_float),-3)
         price_str = str(price_int)
         with open("prediction.txt", 'w', encoding='UTF-8') as f:
             f.write(price_str)
@@ -230,3 +230,4 @@ while True:
     else :
         pass
        #print("AI 작동에 문제가 생겼습니다")
+
